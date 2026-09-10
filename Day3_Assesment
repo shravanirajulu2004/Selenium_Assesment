@@ -124,7 +124,7 @@ public class Day3_Testcase2 {
 		} else {
 		    System.out.println("Selected date is NOT displayed correctly");
 		}
-    driver.quit();
+    	driver.quit();
 	}
 
 }
