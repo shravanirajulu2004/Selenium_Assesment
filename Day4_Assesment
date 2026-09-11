@@ -1,0 +1,117 @@
+**TestCase1**
+
+package demo;
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class CountOfTextfields {
+	public static void main(String[] args) throws InterruptedException {	
+
+		WebDriver driver = new ChromeDriver();
+		
+		driver.manage().window().maximize();
+		
+		driver.get("https://www.facebook.com/");
+		
+		List<WebElement> textfields =  driver.findElements(By.tagName("input"));
+		
+		WebElement textfield = textfields.get(0);
+		int count = textfields.size();
+		
+		System.out.println(count);
+		
+		for(WebElement ele:textfields)
+		{
+			Dimension size = ele.getSize();
+			System.out.println(size);
+		}
+		textfield.sendKeys("sdfg");
+		driver.quit();
+		
+	}
+
+}
+------------------------------------------------------------------------------------------------------------------------------------------
+
+**TestCase2**
+
+package demo;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+public class Zomato {
+
+	public static void main(String[] args) {
+		      WebDriver driver=new ChromeDriver();
+
+	        driver.manage().window().maximize();
+
+	        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+	        
+	        driver.get("https://www.zomato.com/bangalore/delivery");
+	        
+	        driver.findElement(By.xpath("//button[text()='Log in']")).click();
+	        
+	        WebElement ref = driver.findElement(By.id("auth-login-ui"));
+			    driver.switchTo().frame(ref);
+	        driver.findElement(By.xpath("//input[@type='number']")).sendKeys("12345678");
+	        driver.switchTo().defaultContent();
+	        
+	      
+	        System.out.println(driver.findElement(By.xpath("//div[text()='Delivery']")).getText());
+	        driver.quit();
+	}
+
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------
+**TestCase3**
+
+
+package demo;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+public class BigBasket {
+	public static void main(String[] args) throws InterruptedException {
+		    WebDriver driver=new ChromeDriver();
+		    driver.manage().window().maximize();
+		    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+		    driver.get("https://www.bigbasket.com/pb/boss/");
+		    WebElement search = driver.findElement(By.xpath("//input[contains(@placeholder,'Search')]"));
+        search.sendKeys("Choclate");
+        search.sendKeys(Keys.ENTER);
+        Thread.sleep(2000);
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("window.scrollTo(0,500)");
+        driver.findElement(By.xpath("(//button[text()='Add'])[1]")).click();
+        
+        String url = driver.getCurrentUrl();
+
+		if (url.contains("https://www.bigbasket.com/ps/?q=Choclate&nc=as"))
+			System.out.println("Added to basket");
+		else
+			System.out.println("Not added");
+	}
+
+}
