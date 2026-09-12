@@ -4,6 +4,16 @@
 3.Enter email and password and click on login button by reading the data from property file.
 
 -------------------------------------------------------------------------------------------------
+
+
+Browser chrome
+url https://demowebshop.tricentis.com/
+email kai06@gmail.com
+password shravani06
+
+---------------------------------------------------------------------------------------------
+
+
 package dataDrivenTesting;
 
 import java.io.FileInputStream;
@@ -85,12 +95,11 @@ public class OrangehrmTestCase {
 	public static void main(String[] args) throws EncryptedDocumentException, IOException {
 		FileInputStream fis = new FileInputStream("./src/test/resources/DTT/orangehrm.xlsx");
 		Workbook wb = WorkbookFactory.create(fis);
+
 		String Browser = wb.getSheet("Sheet1").getRow(1).getCell(0).getStringCellValue();
 		String url = wb.getSheet("Sheet1").getRow(1).getCell(1).getStringCellValue();
 		String username = wb.getSheet("Sheet1").getRow(1).getCell(2).getStringCellValue();
 		String password = wb.getSheet("Sheet1").getRow(1).getCell(3).getStringCellValue();
-		
-		
 		
 		WebDriver driver = null;
 		if(Browser.equals("chrome"))
@@ -124,6 +133,17 @@ public class OrangehrmTestCase {
 1.Navigate to Demoappsqspiders application
 2.Enter name, email,password and click on login  submit button
 3.Read the data from json file.
+
+-------------------------------------------------------------------------------
+{
+	"Browser":"chrome",
+	"url":"https://demoapps.qspiders.com/ui?scenario=1",
+	"Name":"Shravani",
+	"Email":"kai06@gmail.com",
+	"Password":"shra06"
+}
+
+--------------------------------------------------------------------------------------------
 
 package dataDrivenTesting;
 
