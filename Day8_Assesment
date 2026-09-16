@@ -6,6 +6,23 @@ select job title , select vacancy , select hiring manager ,select status , enter
 verify whether the employee is added from the records found section and logout.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+//hrm.properties
+
+Browser chrome
+url https://opensource-demo.orangehrmlive.com/web/index.php/auth/login
+UN Admin
+PWD admin123
+
+----------------------------------------------------------------------------------------------
+//excel file
+
+
+
+| FirstName | MiddleName | LastName | Vacancy           | Email                                                     | MobileNumber | Resume              | ApplicationDate | JobTitle          | SearchVacancy     | HiringManager | Status                | CandidateName    | SearchApplicationDate |
+| --------- | ---------- | -------- | ----------------- | --------------------------------------------------------- | ------------ | ------------------- | --------------- | ----------------- | ----------------- | ------------- | --------------------- | ---------------- | --------------------- |
+| Govinda   | H          | Rajulu   | Software Engineer | [shravani.test@gmail.com](mailto:shravani.test@gmail.com) | 789456120    | D://shravanires.pdf | 15              | Software Engineer | Software Engineer | Rahul Patil   | Application Initiated | Govinda H Rajulu | 15                    |
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 POM UTILITES
 
