@@ -445,8 +445,6 @@ public class RecruitmentTest {
 		    prefs.put("profile.password_manager_leak_detection", false);
 		    option.setExperimentalOption("prefs", prefs);
 
-		    option.addArguments("--user-data-dir=D:\\ChromeSeleniumProfile");
-
 		    driver = new ChromeDriver(option);
 		}
 
