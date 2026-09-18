@@ -1,0 +1,421 @@
+//Testcase
+
+NAvigate to SauceDemo Application.
+Login using a valid username and password.
+Verify that the Products page is displayed.
+Add Sauce Labs Backpack to the cart.
+Verify that the cart contains 1 item.
+Open the cart.
+Verify that Sauce Labs Backpack is displayed.
+Click on  to checkout.
+Enter: Fisrt Name ,Last Name and postal code and click on continue.
+Verify that the Checkout: Overview page is displayed.
+Click Finish.
+Verify the message "Thank you for your order!".
+Close the browser.
+
+
+Note : Use Two test MEthods
+1.loginTest()
+2.oderPalcementTest()
+
+Maintain property file,Excel File,Pom Pages and Use TestNg annotations
+
+----------------------------------------------------------------------------------------------------------------
+//Properties
+
+Browser chrome
+url https://www.saucedemo.com/
+UN standard_user
+PWD secret_sauce
+
+-------------------------------------------------
+//Execl file
+
+FirstName | LastName | PostalCode
+Shravani  | HG       | 583101
+
+------------------------------------------------------
+
+//Baseclass
+
+package baseClassUtility;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+
+
+
+public class SauceBaseClass {
+    protected WebDriver driver = null;
+
+    protected String Browser;
+    protected String url;
+    protected String Username;
+    protected String password;
+
+    @BeforeSuite
+    public void BS() {
+        System.out.println("open database connectivity");
+    }
+
+    @BeforeTest
+    public void BT() {
+        System.out.println("pre connectivity");
+    }
+
+    @BeforeClass
+    public void BC() throws IOException {
+
+        FileInputStream fis = new FileInputStream(
+                "./src/test/resources/DTT/commondata.properties");
+
+        Properties p = new Properties();
+        p.load(fis);
+
+        Browser = p.getProperty("Browser");
+        url = p.getProperty("url");
+        Username = p.getProperty("UN");
+        password = p.getProperty("PWD");
+
+        if (Browser.equals("chrome")) {
+        	 ChromeOptions option = new ChromeOptions();
+
+ 		    Map<String, Object> prefs = new HashMap<>();
+ 		    prefs.put("profile.password_manager_leak_detection", false);
+ 		    option.setExperimentalOption("prefs", prefs);
+
+ 		    driver = new ChromeDriver(option);
+        }
+
+        if (Browser.equals("edge")) {
+            driver = new EdgeDriver();
+        }
+
+        if (Browser.equals("firefox")) {
+            driver = new FirefoxDriver();
+        }
+
+        driver.manage().window().maximize();
+        driver.get(url);
+
+        System.out.println("launch browser");
+    }
+
+    @BeforeMethod
+    public void BM() {
+    	System.out.println("Before method");
+    }
+
+    @AfterMethod
+    public void AM() {
+        System.out.println("logout done");
+    }
+
+    @AfterClass
+    public void AC() {
+        driver.quit();
+        System.out.println("close browser");
+    }
+
+    @AfterTest
+    public void AT() {
+        System.out.println("post connectivity");
+    }
+
+    @AfterSuite
+    public void AS() {
+        System.out.println("close database connectivity");
+    }
+}
+
+---------------------------------------------------------------------------------------------------------------
+//POM pages
+
+//Login page
+
+package pomutilites;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class SauceLoginPage {
+	WebDriver driver;
+	
+	public SauceLoginPage(WebDriver driver)
+	{
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+	}
+	
+	@FindBy(id="user-name")
+	private WebElement Username;
+	
+	@FindBy(id="password")
+	private WebElement Password;
+	
+	@FindBy(id="login-button")
+	private WebElement login;
+
+	public void getUsername(String UN) {
+		Username.sendKeys(UN);;
+	}
+
+	public void getPassword(String PWD) {
+		Password.sendKeys(PWD);;
+	}
+
+	public void getLogin() {
+		login.click();
+	}
+}
+------------------------------------------------------------
+//Product page
+
+package pomutilites;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class SauceProductPage {
+
+    WebDriver driver;
+
+    public SauceProductPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    @FindBy(id="add-to-cart-sauce-labs-backpack")
+    private WebElement backpack;
+    
+    @FindBy(className="shopping_cart_badge")
+    private WebElement cartCount;
+
+	@FindBy(className="shopping_cart_link")
+    private WebElement cart;
+	
+	@FindBy(className = "title")
+	private WebElement Products;
+
+    public void addBackpack() {
+        backpack.click();
+    }
+    public String getCartCount() {
+    	return cartCount.getText();
+	}
+
+	public void getCart() {
+		cart.click();
+	}
+	
+	public String getProducts() {
+	    return Products.getText();
+	}
+}
+
+---------------------------------------------------------------------
+//Cart page
+
+package pomutilites;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class SauceCartPage {
+
+    WebDriver driver;
+
+    public SauceCartPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    @FindBy(className = "inventory_item_name")
+    private WebElement backpack;
+
+    public String getBackpackName() {
+        return backpack.getText();
+    }
+}
+-----------------------------------------------------------------------
+//Checkout page
+
+package pomutilites;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class SauceCheckoutPage {
+
+    WebDriver driver;
+
+    public SauceCheckoutPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+    
+    @FindBy(id="checkout")
+    private WebElement checkout;
+
+    @FindBy(id="first-name")
+    private WebElement firstName;
+
+    @FindBy(id="last-name")
+    private WebElement lastName;
+
+    @FindBy(id="postal-code")
+    private WebElement postalCode;
+
+    @FindBy(id="continue")
+    private WebElement continueBtn;
+
+    @FindBy(id="finish")
+    private WebElement finish;
+
+    @FindBy(className="complete-header")
+    private WebElement confirmationMessage;
+    
+    @FindBy(className = "title")
+    private WebElement overview;
+ 
+    public void clickCheckout() {
+        checkout.click();
+    }
+
+    public void enterFirstName(String FirstName) {
+        firstName.sendKeys(FirstName);
+    }
+
+    public void enterLastName(String LastName) {
+        lastName.sendKeys(LastName);
+    }
+
+    public void enterPostalCode(String PostalCode) {
+        postalCode.sendKeys(PostalCode);
+    }
+
+    public void clickContinue() {
+        continueBtn.click();
+    }
+
+    public void clickFinish() {
+        finish.click();
+    }
+
+    public String getConfirmationMessage() {
+        return confirmationMessage.getText();
+    }
+    
+    public String getOverview() {
+        return overview.getText();
+    }
+
+}
+----------------------------------------------------------------------------------
+//Java Test Scripts
+
+package usingTestNg;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.testng.annotations.Test;
+import baseClassUtility.SauceBaseClass;
+import pomutilites.SauceCartPage;
+import pomutilites.SauceCheckoutPage;
+import pomutilites.SauceLoginPage;
+import pomutilites.SauceProductPage;
+
+public class SauceTest extends SauceBaseClass { 
+
+	@Test
+	public void loginTest() {
+
+	    SauceLoginPage login = new SauceLoginPage(driver);
+
+	    login.getUsername(Username);
+	    login.getPassword(password);
+	    login.getLogin();
+
+	    SauceProductPage product = new SauceProductPage(driver);
+
+	    System.out.println(product.getProducts());
+	}
+	
+	@Test(dependsOnMethods = "loginTest")
+	public void orderPlacementTest() throws EncryptedDocumentException, IOException {
+		
+		FileInputStream excel = new FileInputStream(
+		        "./src/test/resources/DTT/sauce.xlsx");
+
+		Workbook wb = WorkbookFactory.create(excel);
+
+		DataFormatter df = new DataFormatter();
+
+		String firstName = df.formatCellValue(
+		        wb.getSheet("Sheet1").getRow(1).getCell(0));
+
+		String lastName = df.formatCellValue(
+		        wb.getSheet("Sheet1").getRow(1).getCell(1));
+
+		String postalCode = df.formatCellValue(
+		        wb.getSheet("Sheet1").getRow(1).getCell(2));
+		SauceProductPage product = new SauceProductPage(driver);
+
+		product.addBackpack();
+
+		System.out.println("Cart count: " + product.getCartCount());
+
+		if (product.getCartCount().equals("1")) {
+		    System.out.println("Cart contains 1 item");
+		} else {
+		    System.out.println("Cart does not contain 1 item");
+		}
+		product.getCart();
+	    
+		SauceCartPage cart = new SauceCartPage(driver);
+
+		System.out.println(cart.getBackpackName());
+		
+		SauceCheckoutPage checkout = new SauceCheckoutPage(driver);
+
+		checkout.clickCheckout();
+		checkout.enterFirstName(firstName);
+		checkout.enterLastName(lastName);
+		checkout.enterPostalCode(postalCode);
+		checkout.clickContinue();
+		System.out.println(checkout.getOverview());
+		checkout.clickFinish();
+		System.out.println(checkout.getConfirmationMessage());
+	}
+}
