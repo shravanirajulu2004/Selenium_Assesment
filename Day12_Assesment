@@ -1,0 +1,562 @@
+//TestCase  - 1
+
+Login to orangeHrm application ->click on Recruitment link ->click on vacancies link ->enter vacancy name ,
+select job title,add description , select hiring manager, number of positons-> 
+click on save button 
+
+-----------------------------------------------------------------------------------------------------------------------------------
+//hrm.properties
+
+Browser chrome
+url https://opensource-demo.orangehrmlive.com/web/index.php/auth/login
+UN Admin
+PWD admin123
+--------------------------------------------------------------------------------------------------------------------------------
+//excel
+
++----------+------------+----------+---------------------------+----------------------+--------------------------------------+---------------+-------------------+
+| FirstName| MiddleName | LastName | VacancyName               | JobTitle             | Description                          | HiringManager | NumberOfPositions |
++----------+------------+----------+---------------------------+----------------------+--------------------------------------+---------------+-------------------+
+| Arjun    | K          | Sharma   | Software Engineer Vacancy | Software Engineer    | Software development role            | Rahul Das     | 3                 |
+| Priya    | M          | Reddy    | HR Manager Vacancy        | HR Manager           | Human resources management role      | Rahul Das     | 2                 |
+| Rohan    | S          | Kumar    | IT Manager Vacancy        | IT Manager           | IT management and support role       | Rahul Das     | 4                 |
+| Ananya   | P          | Rao      | Financial Analyst Vacancy | Financial Analyst    | Financial analysis and reporting role | Rahul Das    | 2                 |
+| Kiran    | A          | Patel    | Support Specialist Vacancy| Support Specialist   | Customer and technical support role  | Rahul Das     | 3                 |
+| Sneha    | R          | Singh    | Network Administrator Vacancy | Network Administrator | Network administration role     | Rahul Das     | 2                 |
+| Vivek    | N          | Joshi    | Software Architect Vacancy | Software Architect | Software architecture and design role | Rahul Das     | 1                 |
+| Neha     | T          | Gupta    | HR Associate Vacancy      | HR Associate         | Human resources associate role       | Rahul Das     | 3                 |
+| Aditya   | V          | Verma    | Sales Representative Vacancy | Sales Representative | Sales and customer relationship role | Rahul Das  | 5                 |
+| Pooja    | S          | Nair     | Social Media Marketer Vacancy | Social Media Marketer | Social media marketing role     | Rahul Das     | 2                 |
++----------+------------+----------+---------------------------+----------------------+--------------------------------------+---------------+-------------------+
+-------------------------------------------------------------------------------------------------------
+//BaseClass
+
+package baseClassUtility;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+
+import pompages.Loginpage;
+
+public class HrmBaseClass {
+
+    protected WebDriver driver;
+
+    protected String Browser;
+    protected String url;
+    protected String Username;
+    protected String password;
+    
+    @BeforeSuite
+    public void BS() {
+
+        System.out.println("Establish database connectivity");
+    }
+
+    @BeforeTest
+    public void BT() {
+
+        System.out.println("Preconditions");
+    }
+    @BeforeClass
+    public void BC() throws IOException {
+
+        FileInputStream fis = new FileInputStream(
+                "./src/test/resources/DTT/hrm.properties");
+
+        Properties p = new Properties();
+        p.load(fis);
+
+        Browser = p.getProperty("Browser");
+        url = p.getProperty("url");
+        Username = p.getProperty("UN");
+        password = p.getProperty("PWD");
+
+        if (Browser.equalsIgnoreCase("chrome")) {
+
+            ChromeOptions option = new ChromeOptions();
+
+            Map<String, Object> prefs = new HashMap<>();
+            prefs.put( "profile.password_manager_leak_detection",false);
+
+            option.setExperimentalOption("prefs", prefs);
+
+            driver = new ChromeDriver(option);
+
+        } else if (Browser.equalsIgnoreCase("edge")) {
+
+            driver = new EdgeDriver();
+
+        } else if (Browser.equalsIgnoreCase("firefox")) {
+
+            driver = new FirefoxDriver();
+        }
+
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(
+                java.time.Duration.ofSeconds(10)
+        );
+    }
+
+    @BeforeMethod
+    public void BM() {
+
+        // Open login page before every test
+        driver.get(url);
+
+        Loginpage login = new Loginpage(driver);
+
+        login.getUsername(Username);
+        login.getPassword(password);
+        login.getLogin();
+
+        System.out.println("Login successful");
+    }
+
+    @AfterMethod
+    public void AM() throws InterruptedException {
+
+        Thread.sleep(1000);
+
+        driver.findElement(By.className("oxd-userdropdown-name")).click();
+
+        driver.findElement(By.xpath("//a[text()='Logout']")).click();
+
+        System.out.println("Logout successful");
+    }
+
+    @AfterClass
+    public void AC() {
+
+        driver.quit();
+
+        System.out.println("Browser closed");
+    }
+    @AfterTest
+    public void AT() {
+
+        System.out.println("Post conditions");
+    }
+
+    @AfterSuite
+    public void AS() {
+
+        System.out.println("Close database connectivity");
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+POM pages
+
+//Login page
+
+package pompages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class Loginpage {
+	WebDriver driver;
+	
+	public Loginpage(WebDriver driver)
+	{
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		
+	}
+	
+	@FindBy(name="username")
+	private WebElement Username;
+	
+	@FindBy(name="password")
+	private WebElement Password;
+	
+	@FindBy(css="button")
+	private WebElement login;
+
+	public void getUsername(String UN) {
+		Username.sendKeys(UN);;
+	}
+
+	public void getPassword(String PWD) {
+		Password.sendKeys(PWD);;
+	}
+
+	public void getLogin() {
+		login.click();
+	}
+
+}
+----------------------------------------------------------------------------------------\
+
+//VacanciesPage
+
+package pompages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class VacanciesPage {
+
+    WebDriver driver;
+
+    public VacanciesPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    // Recruitment link
+    @FindBy(xpath = "//span[text()='Recruitment']")
+    private WebElement Recruitment;
+
+    // Vacancies link
+    @FindBy(xpath = "//a[text()='Vacancies']")
+    private WebElement Vacancies;
+
+    // Add button
+    @FindBy(xpath = "//button[normalize-space()='Add']")
+    private WebElement Add;
+
+    // Vacancy Name
+    @FindBy(xpath = "//label[text()='Vacancy Name']/following::input[1]")
+    private WebElement VacancyName;
+
+    // Job Title
+    @FindBy(xpath = "//label[text()='Job Title']/following::div[contains(@class,'oxd-select-text')][1]")
+    private WebElement JobTitle;
+
+    // Description
+    @FindBy(xpath = "//label[text()='Description']/following::textarea[1]")
+    private WebElement Description;
+
+    // Hiring Manager
+    @FindBy(xpath = "//label[text()='Hiring Manager']/following::input[1]")
+    private WebElement HiringManager;
+
+    // Number of Positions
+    @FindBy(xpath = "//label[text()='Number of Positions']/following::input[1]")
+    private WebElement NumberOfPositions;
+
+    // Save button
+    @FindBy(css = "button[type='submit']")
+    private WebElement SaveButton;
+
+
+    // Click Recruitment
+    public void getRecruitment() {
+        Recruitment.click();
+    }
+
+    // Click Vacancies
+    public void getVacancies() {
+        Vacancies.click();
+    }
+
+    // Click Add
+    public void getAdd() {
+        Add.click();
+    }
+
+
+    // Enter Vacancy Name
+    public void getVacancyName(String vacancyName) {
+        VacancyName.sendKeys(vacancyName);
+    }
+
+
+    // Select Job Title
+    public void getJobTitle(String jobTitle) {
+
+        JobTitle.click();
+
+        driver.findElement( By.xpath("//div[@role='option']//span[normalize-space()='"+ jobTitle + "']")).click();
+    }
+
+
+    // Enter Description
+    public void getDescription(String description) {
+        Description.sendKeys(description);
+    }
+
+
+    public void getHiringManager(String hiringManager) {
+
+        HiringManager.sendKeys(hiringManager);
+
+        driver.findElement(By.xpath("//div[contains(@class,'oxd-autocomplete-option')]//span[normalize-space()='" + hiringManager + "']")).click();
+    }
+
+    // Enter Number of Positions
+    public void getNumberOfPositions(String positions) {
+        NumberOfPositions.sendKeys(positions);
+    }
+
+
+    // Click Save
+    public void getSave() {
+        SaveButton.click();
+    }
+}
+------------------------------------------------------------------------------------------
+
+//Java Code
+
+package usingTestNg;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import baseClassUtility.HrmBaseClass;
+import pompages.VacanciesPage;
+
+public class VacanciesTest extends HrmBaseClass {
+
+    @DataProvider(name = "vacancyData")
+    public Object[][] getVacancyData() throws IOException {
+
+        FileInputStream fis = new FileInputStream("./src/test/resources/DTT/hrmsample.xlsx");
+
+        Workbook wb = WorkbookFactory.create(fis);
+
+        Sheet sh = wb.getSheet("Sheet1");
+
+        DataFormatter df = new DataFormatter();
+
+        int rowCount = sh.getLastRowNum();
+        int cellCount = sh.getRow(0).getLastCellNum();
+
+        Object[][] obj = new Object[rowCount][cellCount];
+
+        for (int row = 1; row <= rowCount; row++) {
+
+            for (int col = 0; col < cellCount; col++) {
+
+                obj[row - 1][col] =
+                        df.formatCellValue(sh.getRow(row).getCell(col));
+            }
+        }
+
+        wb.close();
+        fis.close();
+
+        return obj;
+    }
+
+    @Test(dataProvider = "vacancyData")
+    public void createVacancy(	
+            String firstName,
+            String middleName,
+            String lastName,
+            String vacancyName,
+            String jobTitle,
+            String description,
+            String hiringManager,
+            String numberOfPositions)
+            throws IOException, InterruptedException {
+
+        // Login is already handled by Base Class
+
+        VacanciesPage vacancy = new VacanciesPage(driver);
+
+        vacancy.getRecruitment();
+        vacancy.getVacancies();
+        vacancy.getAdd();
+
+        vacancy.getVacancyName(vacancyName);
+        vacancy.getJobTitle(jobTitle);
+        vacancy.getDescription(description);
+        vacancy.getHiringManager(hiringManager);
+        vacancy.getNumberOfPositions(numberOfPositions);
+
+        vacancy.getSave();
+
+        Thread.sleep(2000);
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Testcase 2
+
+Login to orangeHrm application ->click on MyInfo link ->change employee first name, lastname ,employee id ->
+click on save->logut and then login again ->verify whether the edited details are updated-> logout
+---------------------------------------------------------------------------------------------------------------------
+Pom Page
+
+//Myinfo page
+
+package pompages;
+
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class MyInfoPage {
+
+    WebDriver driver;
+
+    public MyInfoPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    // My Info link
+    @FindBy(xpath = "//span[text()='My Info']")
+    private WebElement MyInfo;
+
+    // First Name
+    @FindBy(name = "firstName")
+    private WebElement FirstName;
+
+    // Last Name
+    @FindBy(name = "lastName")
+    private WebElement LastName;
+
+    // Employee Id
+    @FindBy(xpath = "//label[text()='Employee Id']/following::input[1]")
+    private WebElement EmployeeId;
+
+    // Save button
+    @FindBy(xpath = "//button[@type='submit']")
+    private WebElement Save;
+
+
+    // Click My Info
+    public void getMyInfo() {
+        MyInfo.click();
+    }
+
+    public void getFirstName(String firstName) {
+        FirstName.click();
+        FirstName.sendKeys(Keys.CONTROL, "a");
+        FirstName.sendKeys(firstName);
+    }
+
+    public void getLastName(String lastName) {
+        LastName.click();
+        LastName.sendKeys(Keys.CONTROL, "a");
+        LastName.sendKeys(lastName);
+    }
+
+    public void getEmployeeId(String employeeId) {
+        EmployeeId.click();
+        EmployeeId.sendKeys(Keys.CONTROL, "a");
+        EmployeeId.sendKeys(employeeId);
+    }
+
+    // Save
+    public void getSave() {
+        Save.click();
+    }
+
+    // Get values for verification after login
+    public String getFirstNameValue() {
+        return FirstName.getAttribute("value");
+    }
+
+    public String getLastNameValue() {
+        return LastName.getAttribute("value");
+    }
+
+    public String getEmployeeIdValue() {
+        return EmployeeId.getAttribute("value");
+    }
+}
+---------------------------------------------------------------------------------------------------
+
+//Java Code
+
+package usingTestNg;
+
+import org.openqa.selenium.By;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import baseClassUtility.HrmBaseClass;
+import pompages.Loginpage;
+import pompages.MyInfoPage;
+
+public class MyInfoTest extends HrmBaseClass {
+
+    @Test
+    public void updateEmployeeDetails() throws InterruptedException {
+
+        // Login is already handled by HrmBaseClass 
+
+        // My Info
+        MyInfoPage myInfo = new MyInfoPage(driver);
+
+        myInfo.getMyInfo();
+
+        // Change employee details
+        myInfo.getFirstName("Shravani");
+        myInfo.getLastName("Raj");
+        myInfo.getEmployeeId("EMP123");
+
+        // Save
+        myInfo.getSave();
+
+        Thread.sleep(2000);
+
+        // Logout
+        driver.findElement(By.className("oxd-userdropdown-name")).click();
+
+        driver.findElement(By.xpath("//a[text()='Logout']")).click();
+
+        // Login again
+        Loginpage login = new Loginpage(driver);
+
+        login.getUsername(Username);
+        login.getPassword(password);
+        login.getLogin();
+
+        // Open My Info again
+        myInfo = new MyInfoPage(driver);
+
+        myInfo.getMyInfo();
+
+        Thread.sleep(3000);
+
+        // Verify updated details
+        Assert.assertEquals(myInfo.getFirstNameValue(),"Shravani");
+
+        Assert.assertEquals(myInfo.getLastNameValue(),"Raj");
+
+        Assert.assertEquals(myInfo.getEmployeeIdValue(),"EMP123");
+
+        System.out.println("Employee details are successfully updated and verified.");
+    }
+}
