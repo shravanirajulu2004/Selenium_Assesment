@@ -1,0 +1,475 @@
+**Assessment1**
+
+//Test Case 1
+Navigate to demoAppsQSpiders toggle page.
+Click on disabled toggle buttons.
+Click on Place Order button.
+Verify that order is placed.
+------------------------------------------------------------------------------------------------
+package assesment;
+
+import java.time.Duration;
+
+import java.util.List;
+
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class TestCase1 {
+	public static void main(String[] args) throws InterruptedException {
+		WebDriver driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+		driver.get("https://demoapps.qspiders.com/ui/toggle?sublist=0");
+		List<WebElement> toggles =driver.findElements(By.xpath("//span[@class='absolute left-[3px] top-[2px] translate-x-0 inline-block w-3 h-3 transition duration-300 ease-in-out transform bg-white border border-gray-300 rounded-full']"));
+        toggles.get(0).click();
+        Thread.sleep(2000);
+        toggles.get(1).click();
+        Thread.sleep(2000);
+        toggles.get(2).click();
+        Thread.sleep(2000);
+        toggles.get(3).click();
+        driver.findElement(By.id("togglers")).click();
+        driver.quit();
+		String url = driver.getCurrentUrl();
+
+		if (url.contains("https://demoapps.qspiders.com/ui/image")) {
+		    System.out.println("order placed");
+		} else {
+		    System.out.println("order has not placed");
+		}
+		}
+	}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Test Case 2 
+Navigate to demoAppsQSpiders slider page.
+Slide the bar till Men Cotton Jacket and verify.
+---------------------------------------------------------------------
+package assesment;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+
+public class TestCase2 {
+
+	public static void main(String[] args) throws InterruptedException {
+		
+		WebDriver driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+		driver.get("https://demoapps.qspiders.com/ui/slider?sublist=0");
+		Thread.sleep(2000);
+		WebElement slider = driver.findElement(By.xpath("//input[@type='range']"));
+
+		Actions action = new Actions(driver);
+
+		action.clickAndHold(slider).moveByOffset(100, 0).release().perform();
+		
+		WebElement product = driver.findElement(By.xpath("//h3[text()='Mens Cotton Jacket']"));
+
+			if (product.isDisplayed()) {
+			    System.out.println("Men Cotton Jacket is displayed");
+			} else {
+			    System.out.println("Men Cotton Jacket is not displayed");
+			}
+			
+			driver.quit();
+
+	}
+
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------
+//Test Case 3 
+Navigate to demoAppsQSpiders drag and drop multiple page.
+Drag and drop the accessories accordingly.
+Click on Place Order button.
+Verify that order is placed.
+----------------------------------------------------------
+package assesment;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+
+public class TestCase3 {
+	
+public static void main(String[] args) throws InterruptedException {
+
+  WebDriver driver = new ChromeDriver();
+	driver.manage().window().maximize();
+	driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+	driver.get("https://demoapps.qspiders.com/ui/dragDrop/dragToMultiple?sublist=3");
+	WebElement ele1 = driver.findElement(By.id("dragElement1"));
+	ele1.click();
+	WebElement ele2 = driver.findElement(By.id("dragElement3"));
+	ele2.click();
+	WebElement laptop_area = driver.findElement(By.id("dropZone2"));
+	Actions act = new Actions(driver);
+	act.dragAndDrop(ele2, laptop_area).perform();
+	Thread.sleep(2000);
+	WebElement elem3= driver.findElement(By.id("dragElement2"));
+	elem3.click();
+	WebElement elem4 = driver.findElement(By.id("dragElement4"));
+	elem4.click();
+	WebElement mobile_area = driver.findElement(By.id("dropZone1"));
+	act.dragAndDrop(elem4, mobile_area).perform();
+	Thread.sleep(2000);
+	driver.quit();	
+
+}
+
+}
+-------------------------------------------------------------------------------------------------------------------------------------------
+//Test Case 4 
+Navigate to ShopperStack application.
+Click on any product.
+Check whether the product is available to that pincode or not.
+-----------------------------------------------------------------
+package assesment;
+
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+
+public class TestCase4 {
+	public static void main(String[] args) throws InterruptedException {
+	  WebDriver driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		//synchronization
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+		driver.get("https://www.shoppersstack.com/");
+
+		driver.findElement(By.cssSelector("[alt='iphone']")).click();
+
+		driver.findElement(By.name("Check Delivery")).sendKeys("583101");
+		
+		WebElement ref =driver.findElement(By.xpath("//button[@name='Check']"));
+		FluentWait<WebDriver> wait = new FluentWait<WebDriver>(driver);
+		wait.pollingEvery(Duration.ofMillis(200));
+		wait.ignoring(TimeoutException.class);
+		wait.withMessage("element is not clickable within duration");
+		wait.withTimeout(Duration.ofSeconds(30));
+		wait.until(ExpectedConditions.elementToBeClickable(ref));
+		ref.click();
+		WebElement actualText = driver.findElement(By.id("Check Delivery-helper-text"));
+
+		String text = actualText.getText();
+	
+		if (text.contains("Not")) {
+		    System.out.println("Not Deliverable");
+		} else {
+		    System.out.println("Deliverable");
+		}
+		driver.quit();	
+	}
+}
+===============================================================================================================================================================
+===============================================================================================================================================================
+**Assessment2**
+
+Test Case 1 – OrangeHRM Buzz
+Login to OrangeHRM application.
+Click on Buzz link.
+Enter some data in the What's on your mind? text field.
+Click on Post.
+Verify whether the post is posted in the Recent Posts layout.
+Logout.
+----------------------------------------------------------------------------------------------------
+//properties
+
+Browser chrome
+url https://opensource-demo.orangehrmlive.com/web/index.php/auth/login
+UN Admin
+PWD admin123
+----------------------------------------------
+//BaseClass
+
+package assesmentpompages;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+
+import assesmentpompages.LoginPage;
+
+public class BaseClass {
+
+    protected WebDriver driver;
+
+    protected String Browser;
+    protected String url;
+    protected String Username;
+    protected String password;
+    
+    @BeforeSuite
+    public void BS() {
+
+        System.out.println("Establish database connectivity");
+    }
+
+    @BeforeTest
+    public void BT() {
+
+        System.out.println("Preconditions");
+    }
+    @BeforeClass
+    public void BC() throws IOException {
+
+        FileInputStream fis = new FileInputStream("./src/test/resources/DTT/hrm.properties");
+
+        Properties p = new Properties();
+        p.load(fis);
+
+        Browser = p.getProperty("Browser");
+        url = p.getProperty("url");
+        Username = p.getProperty("UN");
+        password = p.getProperty("PWD");
+
+        if (Browser.equalsIgnoreCase("chrome")) {
+
+            ChromeOptions option = new ChromeOptions();
+
+            Map<String, Object> prefs = new HashMap<>();
+            prefs.put( "profile.password_manager_leak_detection",false);
+
+            option.setExperimentalOption("prefs", prefs);
+
+            driver = new ChromeDriver(option);
+
+        } else if (Browser.equalsIgnoreCase("edge")) {
+
+            driver = new EdgeDriver();
+
+        } else if (Browser.equalsIgnoreCase("firefox")) {
+
+            driver = new FirefoxDriver();
+        }
+
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(
+                java.time.Duration.ofSeconds(10)
+        );
+    }
+
+    @BeforeMethod
+    public void BM() {
+
+        // Open login page before every test
+        driver.get(url);
+
+        LoginPage login = new LoginPage(driver);
+
+        login.getUsername(Username);
+        login.getPassword(password);
+        login.getLogin();
+
+        System.out.println("Login successful");
+    }
+
+    @AfterMethod
+    public void AM() throws InterruptedException {
+
+        Thread.sleep(1000);
+
+        driver.findElement(By.className("oxd-userdropdown-name")).click();
+
+        driver.findElement(By.xpath("//a[text()='Logout']")).click();
+
+        System.out.println("Logout successful");
+    }
+
+    @AfterClass
+    public void AC() {
+
+        driver.quit();
+
+        System.out.println("Browser closed");
+    }
+    @AfterTest
+    public void AT() {
+
+        System.out.println("Post conditions");
+    }
+
+    @AfterSuite
+    public void AS() {
+
+        System.out.println("Close database connectivity");
+    }
+}
+
+---------------------------------------------------------------------------------------------------
+//Pompages
+
+//Login Page
+
+package assesmentpompages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class LoginPage {
+	WebDriver driver;
+	
+	public LoginPage(WebDriver driver)
+	{
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		
+	}
+	
+	@FindBy(name="username")
+	private WebElement Username;
+	
+	@FindBy(name="password")
+	private WebElement Password;
+	
+	@FindBy(css="button")
+	private WebElement login;
+
+	public void getUsername(String UN) {
+		Username.sendKeys(UN);;
+	}
+
+	public void getPassword(String PWD) {
+		Password.sendKeys(PWD);;
+	}
+
+	public void getLogin() {
+		login.click();
+	}
+
+}
+------------------------------------------------------------------------------------------------------
+//Home page
+
+package assesmentpompages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class HomePage {
+	WebDriver driver;
+	public HomePage(WebDriver driver) {
+		this.driver= driver;
+		PageFactory.initElements(driver, this);
+	}
+			@FindBy(xpath = "//span[text()='Buzz']")
+			private WebElement BuzzLInk;
+			
+			public void getBuzzLInk() {
+				BuzzLInk.click();
+			}
+
+}
+-----------------------------------------------------------------------------------------------------
+//Buzzpage
+
+package assesmentpompages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class Buzzpompage {
+	WebDriver driver;
+	
+	public Buzzpompage(WebDriver driver)
+	{
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		
+	}
+	
+	@FindBy(className ="oxd-buzz-post-input")
+	private WebElement input;
+	
+	@FindBy(css="[type='submit']")
+	private WebElement postbtn;
+	
+	@FindBy(xpath="//div[contains(@class,'orangehrm-buzz-post-body')]//p")
+	private WebElement RecentPost;
+
+	public void getInput() {
+		input.sendKeys("hello");
+	}
+
+	public void getPostbtn() {
+		postbtn.click();
+	}
+	public WebElement getRecentPost() {
+
+	    return RecentPost;
+	}
+	
+}
+----------------------------------------------------------------------------------------------------------------------------------
+//Java Code
+
+package assessment;
+
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import assesmentpompages.BaseClass;
+import assesmentpompages.Buzzpompage;
+import assesmentpompages.HomePage;
+
+public class TestCase1 extends BaseClass {
+	@Test
+	public void test()
+	{
+		HomePage hp = new HomePage(driver);
+		hp.getBuzzLInk();
+		Buzzpompage b = new Buzzpompage(driver);
+		b.getInput();
+		b.getPostbtn();
+		Assert.assertTrue(b.getRecentPost().isDisplayed());
+		System.out.println("Executed");
+	}
+
+}
+
